@@ -3,4 +3,11 @@
     "image": "matspfeiffer/flutter:beta",
     "extensions": ["dart-code.dart-code", "dart-code.flutter", "mhutchie.git-graph"]
     //"postCreateCommand": "flutter create glossary"
+    /* To fix container related Git issues, run:
+            git config --global core.editor "code --wait"
+        	git config --edit --global
+        and delete:
+            [credential "helperselector"]
+	            selected = <no helper>
+    */
 }
