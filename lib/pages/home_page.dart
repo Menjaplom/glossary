@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glossary/widgets/loading_expansion_tile.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -6,20 +7,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map data = {};
+  Map? data;
   bool order = false;
   List<String> language = ['Unassigned', 'Unassigned'];
   List<List<String>> tags = [];
 
   @override
   Widget build(BuildContext context) {
-    data = data.isNotEmpty
+    data = (data != null)
         ? data
-        : ModalRoute.of(context)!.settings.arguments
-            as Map<dynamic, dynamic>; // TODO: surely this line can be improved
-    language = data.isNotEmpty ? data['language'] : language;
-    tags = data.isNotEmpty ? data['tags'] : tags;
-    order = data.isNotEmpty ? data['order'] : order;
+        : ModalRoute.of(context)?.settings.arguments
+            as Map<dynamic, dynamic>?; // TODO: surely this line can be improved
+    language = data?['language'] ?? language;
+    tags = data?['tags'] ?? tags;
+    order = data?['order'] ?? order;
 
     int first = order ? 1 : 0;
     int second = order ? 0 : 1;
@@ -29,11 +30,11 @@ class _HomePageState extends State<HomePage> {
         ),
         body: Center(
             child: ListView.separated(
-                itemBuilder: (_, index) => Row(
-                      children: <Widget>[
-                        Text(tags[index][first]),
-                        Text(tags[index][second])
-                      ],
+                itemBuilder: (_, index) => Card(
+                      child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: LoadingExpansionTile(
+                              [tags[index][first], tags[index][second]])),
                     ),
                 separatorBuilder: (_, x) => Divider(),
                 itemCount: tags.length)));
