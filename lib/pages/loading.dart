@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:glossary/services/db_service.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 class Loading extends StatefulWidget {
   @override
   _LoadingState createState() => _LoadingState();
 }
 
-// TODO: implement access to a DB to retrieve data
 class _LoadingState extends State<Loading> {
   void setupWorldTime() async {
+    Database db = await GlossaryDB.instance.database;
+
     await Future.delayed(
         const Duration(seconds: 1)); // Simulating getting last glossary opened
     await Future.delayed(

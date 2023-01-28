@@ -16,8 +16,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     data = (data != null)
         ? data
-        : ModalRoute.of(context)?.settings.arguments
-            as Map<dynamic, dynamic>?; // TODO: surely this line can be improved
+        : ModalRoute.of(context)?.settings.arguments as Map<dynamic, dynamic>?;
     language = data?['language'] ?? language;
     tags = data?['tags'] ?? tags;
     order = data?['order'] ?? order;

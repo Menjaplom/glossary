@@ -16,21 +16,26 @@ class _LoadingExpansionTileState extends State<LoadingExpansionTile> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
+    return Card(
+        child: ExpansionTile(
       title: Row(
         children: <Widget>[Text(widget.tags[0]), Text(widget.tags[1])],
       ),
-      children: <Widget>[
-        (() {
-          if (!loaded) {
-            return Center(
+      children: (() {
+        if (!loaded) {
+          return <Widget>[
+            Center(
                 child: SpinKitWave(
-                    color: Colors.blue, type: SpinKitWaveType.start));
-          } else {
-            return Text('Birth of the Sun');
-          }
-        }())
-      ],
+                    color: Colors.blue, type: SpinKitWaveType.start))
+          ];
+        } else {
+          List<Widget> value = [];
+          data.forEach((element) {
+            value.add(Text(element));
+          });
+          return value;
+        }
+      }()),
       onExpansionChanged: (bool expanded) async {
         await Future.delayed(
             const Duration(seconds: 1)); // Simulating getting tag words
@@ -40,6 +45,6 @@ class _LoadingExpansionTileState extends State<LoadingExpansionTile> {
           loaded = true;
         });
       },
-    );
+    ));
   }
 }
