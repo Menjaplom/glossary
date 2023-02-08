@@ -10,7 +10,8 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
   void setupWorldTime() async {
-    Database db = await GlossaryDB.instance.database;
+    GlossaryDB db = await GlossaryDB.instance;
+    await db.init();
 
     await Future.delayed(
         const Duration(seconds: 1)); // Simulating getting last glossary opened

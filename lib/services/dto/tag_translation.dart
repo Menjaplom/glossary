@@ -1,26 +1,10 @@
-class Tag {
-  final String lang;
-  final String tag;
-
-  const Tag({required this.lang, required this.tag});
-
-  Map<String, dynamic> toMap() {
-    return {'lang': lang, 'tag': tag};
-  }
-
-  @override
-  String toString() {
-    return 'Tag{lang: $lang, tag: $tag}';
-  }
-}
-
-class TagTranslation {
+class TagTrans {
   final String lang1;
   final String lang2;
   final String tag1;
   final String tag2;
 
-  const TagTranslation(
+  const TagTrans(
       {required this.lang1,
       required this.lang2,
       required this.tag1,

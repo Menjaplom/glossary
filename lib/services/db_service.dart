@@ -2,6 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:glossary/services/db/db_stub.dart'
     if (dart.library.html) 'package:glossary/services/db/db_web.dart'
     if (dart.library.io) 'package:glossary/services/db/db_desktop.dart';
+import 'package:glossary/services/db/tables/tables.dart';
+import 'package:glossary/services/dto/dto.dart';
 
 class GlossaryDB {
   // Creating singleton instance
@@ -11,59 +13,23 @@ class GlossaryDB {
   static Database? _database;
   static const _databaseVersion = 1;
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-
-    _database = await initDatabase('glossary.db');
-    return _database!;
+  Future<void> init() async {
+    if (_database == null) _database = await initDatabase('glossary.db');
+    await _createTables(_database!, _databaseVersion);
   }
 
-  Future _create(Database db, int version) async {
-    print('first table created');
-    await db.execute('''CREATE TABLE IF NOT EXISTS langs ( 
-                          lang TEXT NOT NULL,
-                          PRIMARY KEY(lang)
-                        )''');
-    print('first table created');
-    await db.execute('''CREATE TABLE IF NOT EXISTS langs_glossary ( 
-                          lang1 TEXT NOT NULL,
-                          lang2 TEXT NOT NULL,
-                          last_open INTEGER,
-                          lang_order INTEGER NOT NULL,
-                          PRIMARY KEY(lang1, lang2)
-                          FOREIGN KEY(lang1, lang2) REFERENCES langs(lang, lang)
-                        )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS tags ( 
-                          lang TEXT NOT NULL, 
-                          tag TEXT NOT NULL,
-                          PRIMARY KEY(lang, tag)
-                          FOREIGN KEY(lang) REFERENCES langs(lang)
-                        )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS tag_translations ( 
-                          lang1 TEXT NOT NULL,
-                          lang2 TEXT NOT NULL, 
-                          tag1 TEXT NOT NULL,
-                          tag2 TEXT NOT NULL,
-                          PRIMARY KEY(lang1, lang2, tag1, tag2),
-                          FOREIGN KEY(lang1, lang2, tag1, tag2) REFERENCES tags(lang, lang, tag, tag)
-                        )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS words ( 
-                          lang TEXT NOT NULL,
-                          tag TEXT NOT NULL,
-                          word TEXT NOT NULL, 
-                          description TEXT,
-                          PRIMARY KEY(lang, tag, word),
-                          FOREIGN KEY(lang, tag) REFERENCES tags(lang, tag)
-                        )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS word_translations ( 
-                          lang1 TEXT NOT NULL,
-                          lang2 TEXT NOT NULL, 
-                          tag1 TEXT NOT NULL,
-                          tag2 TEXT NOT NULL,
-                          word1 TEXT NOT NULL, 
-                          word2 TEXT NOT NULL, 
-                          PRIMARY KEY(lang1, lang2, tag1, tag2, word1, word2),
-                          FOREIGN KEY(lang1, lang2, tag1, tag2, word1, word2) REFERENCES words(lang, lang, tag, tag, word, word)
-                        )''');
+  Future<void> _createTables(Database db, int version) async {
+    await db.execute(TableLang.getCreateTable());
+    await db.execute(TableGlossary.getCreateTable());
+    await db.execute(TableTag.getCreateTable());
+    await db.execute(TableTagTranslation.getCreateTable());
+    await db.execute(TableWord.getCreateTable());
+    await db.execute(TableWordTranslation.getCreateTable());
   }
+
+  /*Future<List<LangsGlossary>> getLangsGlossary() {
+    List<Map<String, dynamic>> maps = _database!.query('langs_glossary',
+        columns: LangsGlossary.getTableColumns(),
+        orderBy: 'last_view') as List<Map<String, dynamic>>;
+  }*/
 }
