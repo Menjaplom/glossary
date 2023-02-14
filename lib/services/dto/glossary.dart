@@ -1,10 +1,12 @@
-class LangsGlossary {
+class DtoGlossary {
+  static const String name = 'DTO_Glossary';
+
   final String lang1;
   final String lang2;
   final int lastView;
   final bool langOrder;
 
-  const LangsGlossary(
+  const DtoGlossary(
       {required this.lang1,
       required this.lang2,
       required this.lastView,
