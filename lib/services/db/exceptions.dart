@@ -15,6 +15,35 @@ class DTOConvException extends DBException {
 
   @override
   String toString() {
-    return '${super.toString()}: DTO_Conversion: Map is missing the field $field in order to convert it into DTO $dto.';
+    return '${super.toString()}: DTO_Conversion: Map is missing field "$field" '
+        'when converting into DTO "$dto".';
+  }
+}
+
+class InsertionException extends DBException {
+  final String table;
+  final String dto;
+  final String cause;
+
+  InsertionException(this.table, this.dto, this.cause);
+
+  @override
+  String toString() {
+    return '${super.toString()}: Insertion: Failed at table "$table", with DTO '
+        '"$dto". Cause: "$cause".';
+  }
+}
+
+class UnknownException extends DBException {
+  final String table;
+  final String dto;
+  final String cause;
+
+  UnknownException(this.table, this.dto, this.cause);
+
+  @override
+  String toString() {
+    return '${super.toString()}: Unknown: Failed at table "$table", with DTO '
+        '"$dto". Cause: "$cause".';
   }
 }

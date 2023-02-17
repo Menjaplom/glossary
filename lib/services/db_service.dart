@@ -1,3 +1,4 @@
+import 'package:glossary/services/db/exceptions.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:glossary/services/db/db_stub.dart'
     if (dart.library.html) 'package:glossary/services/db/db_web.dart'
@@ -27,9 +28,37 @@ class GlossaryDB {
     await db.execute(TableWordTranslation.getCreateTable());
   }
 
-  /*Future<List<LangsGlossary>> getLangsGlossary() {
-    List<Map<String, dynamic>> maps = _database!.query('langs_glossary',
-        columns: LangsGlossary.getTableColumns(),
-        orderBy: 'last_view') as List<Map<String, dynamic>>;
-  }*/
+  /* GLOSSARY OPERATIONS */
+
+  Future<List<DtoGlossary>> getGlossaries() async {
+    List<Map<String, dynamic>> rows =
+        await _database!.rawQuery(TableGlossary.queryAll());
+    List<DtoGlossary> result = rows.map((r) => TableGlossary.toDTO(r)).toList();
+    return result;
+  }
+
+  void insertGlossary(DtoGlossary dto) async {
+    int id = 0;
+    try {
+      id = await _database!.rawInsert(TableGlossary.insertGlossary(),
+          [dto.lang1, dto.lang2, dto.lastView, dto.langOrder]);
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError())
+        throw InsertionException(TableGlossary.name, dto.toString(),
+            'This Glossary already exists. Complete trace: ${e.toString()}');
+      else if (e.isNotNullConstraintError()) {
+        throw InsertionException(TableGlossary.name, dto.toString(),
+            'Some field should not be NULL. Complete trace: ${e.toString()}');
+      } else {
+        throw UnknownException(
+            TableGlossary.name, dto.toString(), e.toString());
+      }
+    } catch (e) {
+      throw UnknownException(TableGlossary.name, dto.toString(), e.toString());
+    }
+    if (id == 0) {
+      throw InsertionException(
+          TableGlossary.name, dto.toString(), 'Unknown. Row ID returned 0.');
+    }
+  }
 }
