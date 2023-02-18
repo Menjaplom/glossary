@@ -28,20 +28,69 @@ class GlossaryDB {
     await db.execute(TableWordTranslation.getCreateTable());
   }
 
+  /* LANGUAGE OPERATIONS */
+
+  Future<List<DtoLang>> getLanguages() async {
+    try {
+      List<Map<String, dynamic>> rows =
+          await _database!.rawQuery(TableLang.queryAll());
+      List<DtoLang> result = rows.map((r) => TableLang.toDTO(r)).toList();
+      return result;
+    } on DatabaseException catch (e) {
+      throw QueryException(TableGlossary.name,
+          'Unable to retrieve Languages. Complete trace: ${e.toString()}');
+    } catch (e) {
+      throw UnknownException(
+          TableGlossary.name, 'no DTO involved', e.toString());
+    }
+  }
+
+  Future<void> insertLanguage(DtoLang dto) async {
+    int id = 0;
+    try {
+      id = await _database!.rawInsert(TableLang.insert(), [dto.lang]);
+    } on DatabaseException catch (e) {
+      if (e.isUniqueConstraintError())
+        throw InsertionException(TableLang.name, dto.toString(),
+            'This Language already exists. Complete trace: ${e.toString()}');
+      else if (e.isNotNullConstraintError()) {
+        throw InsertionException(TableLang.name, dto.toString(),
+            'Some field should not be NULL. Complete trace: ${e.toString()}');
+      } else {
+        throw UnknownException(TableLang.name, dto.toString(), e.toString());
+      }
+    } catch (e) {
+      throw UnknownException(TableLang.name, dto.toString(), e.toString());
+    }
+    if (id == 0) {
+      throw InsertionException(
+          TableLang.name, dto.toString(), 'Unknown. Row ID returned 0.');
+    }
+  }
+
   /* GLOSSARY OPERATIONS */
 
   Future<List<DtoGlossary>> getGlossaries() async {
-    List<Map<String, dynamic>> rows =
-        await _database!.rawQuery(TableGlossary.queryAll());
-    List<DtoGlossary> result = rows.map((r) => TableGlossary.toDTO(r)).toList();
-    return result;
+    try {
+      List<Map<String, dynamic>> rows =
+          await _database!.rawQuery(TableGlossary.queryAll());
+      List<DtoGlossary> result =
+          rows.map((r) => TableGlossary.toDTO(r)).toList();
+      return result;
+    } on DatabaseException catch (e) {
+      throw QueryException(TableGlossary.name,
+          'Unable to retrieve Glossaries. Complete trace: ${e.toString()}');
+    } catch (e) {
+      throw UnknownException(
+          TableGlossary.name, 'no DTO involved', e.toString());
+    }
   }
 
-  void insertGlossary(DtoGlossary dto) async {
+  Future<void> insertGlossary(DtoGlossary dto) async {
     int id = 0;
     try {
       id = await _database!.rawInsert(TableGlossary.insertGlossary(),
-          [dto.lang1, dto.lang2, dto.lastView, dto.langOrder]);
+          [dto.lang1, dto.lang2, dto.lastView, dto.langOrder ? 1 : 0]);
     } on DatabaseException catch (e) {
       if (e.isUniqueConstraintError())
         throw InsertionException(TableGlossary.name, dto.toString(),

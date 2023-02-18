@@ -34,6 +34,19 @@ class InsertionException extends DBException {
   }
 }
 
+class QueryException extends DBException {
+  final String table;
+  final String cause;
+
+  QueryException(this.table, this.cause);
+
+  @override
+  String toString() {
+    return '${super.toString()}: Query: Failed at table "$table". Cause: '
+        '"$cause".';
+  }
+}
+
 class UnknownException extends DBException {
   final String table;
   final String dto;

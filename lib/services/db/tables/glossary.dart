@@ -52,7 +52,7 @@ class TableGlossary {
         lang1: row[col0],
         lang2: row[col1],
         lastView: row[col2],
-        langOrder: row[col3]);
+        langOrder: (row[col3] == 0 ? false : true));
     return result;
   }
 }
